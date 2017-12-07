@@ -1,14 +1,7 @@
 #!/usr/bin/env python
 
-'''
-face detection using haar cascades
-
-USAGE:
-    facedetect.py [--cascade <cascade_fn>] [--nested-cascade <cascade_fn>] [<video_source>]
-'''
-
-# Python 2/3 compatibility
 from __future__ import print_function
+from firebase import firebase
 
 import numpy as np
 import cv2
@@ -45,13 +38,14 @@ if __name__ == '__main__':
     cascade = cv2.CascadeClassifier(cascade_fn)
    
     cam = create_capture(video_src)
+    count=0
 
     while True:
         ret, img = cam.read()
         gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
         gray = cv2.equalizeHist(gray)
 
-        
+        t=clock()
         rects = detect(gray, cascade)
         vis = img.copy()
        
@@ -69,3 +63,8 @@ if __name__ == '__main__':
         if cv2.waitKey(5) == 27:
             break
     cv2.destroyAllWindows()
+    firebase = firebase.FirebaseApplication('https://mitdb-7e16b.firebaseio.com/')
+    data = {'Cat' : count }
+
+    result= firebase.put('https://mitdb-7e16b.firebaseio.com','/mitdb-7e16b',data)
+    print(result)    
